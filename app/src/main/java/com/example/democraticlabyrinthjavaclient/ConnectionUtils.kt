@@ -3,9 +3,7 @@ package com.example.democraticlabyrinthjavaclient
 import android.util.Log
 import com.beust.klaxon.*
 import org.jetbrains.anko.doAsync
-import java.io.ByteArrayInputStream
-import java.io.DataInputStream
-import java.io.EOFException
+import java.io.*
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -137,6 +135,24 @@ class ConnectionUtils {
                 Log.i(TAG, gameInfo!!.goals[0].shortDescription + gameInfo!!.color + gameInfo!!.name)
                 Log.i(TAG, "loop ended")
             }
+        }
+    }
+
+    fun sendMovement(direction: Int){
+        doAsync {
+            val byteOut = ByteArrayOutputStream()
+            val dataOut = DataOutputStream(byteOut)
+
+            dataOut.writeInt(playerId!!)
+            dataOut.writeInt(direction)
+
+            val bytes = byteOut.toByteArray()
+
+            val mPacket = DatagramPacket(bytes, bytes.size)
+            mPacket.address = serverIP
+            mPacket.port = 6666
+
+            playtimeSocket.send(mPacket)
         }
     }
 }
